@@ -47,7 +47,6 @@ public class SpyGenerator {
 			ILGenerator il = spiedMethod.GetILGenerator();
 			LocalBuilder argsArray = il.DeclareLocal(typeof(object[]));
 			LocalBuilder currentMethod = il.DeclareLocal(typeof(MethodInfo));
-			LocalBuilder rth = il.DeclareLocal(typeof(string));
 			
 			void IlEmit(OpCode opcode, dynamic parameter) {
 				if (printIl) {
