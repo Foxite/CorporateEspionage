@@ -5,11 +5,10 @@ I couldn't figure out how to use Moq to run assertions on calls on mocked object
 - Uses System.Reflection.Emit to create types at runtime, that implement arbitrary interfaces (mock objects) and record the parameters of any method call
 - Inspect the parameters of specific invocations, and run assertions using your favorite unit testing framework
 - Supports methods with an arbitrary amount of parameters, with arbitrary types, or no parameters at all
-- Only supports methods that return void
+- Supports method with both void and non-void return types (and returns the default value for the type)
+- Supports methods that return Task or Task<T> (and return `Task.CompletedTask` or `Task.FromResult(default(T))` respectively)
 
 ### Planned features
-- Support for methods with return values (and return the default value of the type)
-- Support for methods with a Task return value (and return `Task.CompletedTask` or `Task.FromResult(default(T))`)
 - Configure the return values of expected method invocations, sequentially or by parameter criteria
 - Support for generic types and methods, and recording the generic type parameters
 
