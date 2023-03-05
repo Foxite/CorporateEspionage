@@ -12,6 +12,7 @@ public class Spy<T> where T : class {
 		m_SpiedObject = @object as SpiedObject ?? throw new InvalidCastException($"Cannot cast T ({typeof(T).FullName}) to SpiedObject");
 	}
 
+	// TODO: setup return values
 	public CallParameters GetCallParameters(MethodInfo method, int invocation) {
 		return m_SpiedObject.Calls[method][invocation];
 	}

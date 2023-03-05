@@ -52,6 +52,44 @@ public class SpyGenerator {
 				il.Emit(opcode);
 			}
 			
+			/*
+			
+			C#:
+				this.RegisterCall(MethodBase.GetCurrentMethod(), new object[] { arg1, arg2, ... });
+			
+			A non static function has the `this` reference as its first parameter, so:
+				SpyGenerator.RegisterCall(this, MethodBase.GetCurrentMethod(), new object[] { arg1, arg2, ... });
+			
+			That's a one-liner, but it looks a bit more like this internally:
+				var currentMethod = MethodBase.GetCurrentMethod();
+				var parameterList = new object[n];
+				
+				parameterList[0] = arg1;
+				parameterList[1] = arg2;
+				...
+				
+				SpyGenerator.RegisterCall(this, currentMethod, parameterList);
+				
+			MSIL is stack based, so this is what it ends up being:
+				push_arg 0; // this reference (will be the first parameter for the call at the very end)
+				call MethodBase.GetCurrentMethod; // and push the return value (the second parameter)
+				push_constant argument_count;
+				new_array object; // create an object[] and push the reference
+				store_local 0; // pop the reference and store it in a local
+				
+				// For every argument: (this is an unrolled loop)
+				push_local 0; // the array reference
+				push_constant n; // the array index
+				push_arg m; // the value to store (could be a value type or a reference or something)
+				store_element; // pops the 3 items and stores the value in the array at the index
+				
+				// Finally:
+				push_local 0; // the array reference, third parameter for the call
+				call SpiedObject.RegisterCall;
+				return; // every function needs a return instruction at the end, otherwise it's invalid
+			
+			 */
+
 			// Load this
 			IlEmit(OpCodes.Ldarg, 0);
 			
@@ -95,6 +133,5 @@ public class SpyGenerator {
 		spiedType = typeBuilder.CreateType() ?? throw new Exception("what the fuck? 3");
 		m_SpiedTypes.Add(typeT, spiedType);
 		return new Spy<T>((T) Activator.CreateInstance(spiedType)!);
-		//return (T) typeBuilder.GetConstructor(Array.Empty<Type>())!.Invoke(Array.Empty<object?>());
 	}
 }
