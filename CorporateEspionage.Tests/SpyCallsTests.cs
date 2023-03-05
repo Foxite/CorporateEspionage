@@ -162,7 +162,7 @@ public class SpyCallsTests {
 		Spy<ITestInterface> spy1 = m_Generator.CreateSpy<ITestInterface>();
 		Spy<ITestInterface> spy2 = m_Generator.CreateSpy<ITestInterface>();
 		spy1.Object.Test4("ello", 235);
-		spy2.Object.Test5("ello", 235);
+		spy2.Object.Test5("yttg", 523);
 		
 		CallParameters callParameters1 = spy1.GetCallParameters(interfaceTest4, 0);
 		CallParameters callParameters2 = spy2.GetCallParameters(interfaceTest5, 0);
@@ -178,10 +178,10 @@ public class SpyCallsTests {
 			Assert.That(callParameters1.GetParameter(1    ), Is.EqualTo(235));
 			Assert.That(callParameters1.GetParameter("hey"), Is.EqualTo(235));
 
-			Assert.That(callParameters2.GetParameter(0    ), Is.EqualTo("ello"));
-			Assert.That(callParameters2.GetParameter("yo" ), Is.EqualTo("ello"));
-			Assert.That(callParameters2.GetParameter(1    ), Is.EqualTo(235));
-			Assert.That(callParameters2.GetParameter("hey"), Is.EqualTo(235));
+			Assert.That(callParameters2.GetParameter(0    ), Is.EqualTo("yttg"));
+			Assert.That(callParameters2.GetParameter("yo" ), Is.EqualTo("yttg"));
+			Assert.That(callParameters2.GetParameter(1    ), Is.EqualTo(523));
+			Assert.That(callParameters2.GetParameter("hey"), Is.EqualTo(523));
 		});
 	}
 	
