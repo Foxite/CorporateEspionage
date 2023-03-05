@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorporateEspionage", "CorporateEspionage\CorporateEspionage.csproj", "{0F28134D-33FC-4418-8C7D-CC11596F0423}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CorporateEspionage.Tests", "CorporateEspionage.Tests\CorporateEspionage.Tests.csproj", "{D5FD7B9F-4830-4269-8005-1A3DB6C960E7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0F28134D-33FC-4418-8C7D-CC11596F0423}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F28134D-33FC-4418-8C7D-CC11596F0423}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F28134D-33FC-4418-8C7D-CC11596F0423}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F28134D-33FC-4418-8C7D-CC11596F0423}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5FD7B9F-4830-4269-8005-1A3DB6C960E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5FD7B9F-4830-4269-8005-1A3DB6C960E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5FD7B9F-4830-4269-8005-1A3DB6C960E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5FD7B9F-4830-4269-8005-1A3DB6C960E7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
