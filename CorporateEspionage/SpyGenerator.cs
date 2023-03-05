@@ -8,7 +8,7 @@ public class SpyGenerator {
 	private ModuleBuilder? m_ModuleBuilder;
 	private readonly Dictionary<Type, Type> m_SpiedTypes = new();
 
-	public Spy<T> CreateSpy<T>() where T : class {
+	public Spy<T> CreateSpy<T>(bool printIl = true) where T : class {
 		Type typeT = typeof(T);
 		if (m_SpiedTypes.TryGetValue(typeT, out Type? spiedType)) {
 			return new Spy<T>((T) Activator.CreateInstance(spiedType)!);
@@ -28,27 +28,36 @@ public class SpyGenerator {
 
 		typeBuilder.DefineDefaultConstructor(MethodAttributes.Public);
 
-		Console.WriteLine(typeT.FullName);
+		if (printIl) {
+			Console.WriteLine(typeT.FullName);
+		}
+		
 		foreach (MethodInfo interfaceMethod in typeT.GetMethods()) {
-			Console.WriteLine(interfaceMethod.Name);
-			ParameterInfo[] interfaceMethodParameters = interfaceMethod.GetParameters();
+			if (printIl) {
+				Console.WriteLine(interfaceMethod.Name);
+			}
 			
-			MethodBuilder spiedMethod = typeBuilder.DefineMethod(interfaceMethod.Name, MethodAttributes.Public | MethodAttributes.Virtual, typeof(void), interfaceMethodParameters.Select(pi => pi.ParameterType).ToArray());
+			ParameterInfo[] interfaceMethodParameters = interfaceMethod.GetParameters();
+			MethodBuilder spiedMethod = typeBuilder.DefineMethod(interfaceMethod.Name, MethodAttributes.Public | MethodAttributes.Virtual, interfaceMethod.ReturnType, interfaceMethodParameters.Select(pi => pi.ParameterType).ToArray());
 			typeBuilder.DefineMethodOverride(spiedMethod, interfaceMethod);
 			
 			// MSIL resources:
 			// https://www.codeguru.com/dotnet/msil-tutorial/
 			// https://en.wikipedia.org/wiki/List_of_CIL_instructions
 			ILGenerator il = spiedMethod.GetILGenerator();
-			il.DeclareLocal(typeof(object[]));
+			LocalBuilder argsArray = il.DeclareLocal(typeof(object[]));
 			
 			void IlEmit(OpCode opcode, dynamic parameter) {
-				Console.WriteLine($"{opcode.ToString()} {parameter.ToString()}");
+				if (printIl) {
+					Console.WriteLine($"{opcode.ToString()} {parameter.ToString()}");
+				}
 				il.Emit(opcode, parameter);
 			}
 			
 			void IlEmit2(OpCode opcode) {
-				Console.WriteLine(opcode.ToString());
+				if (printIl) {
+					Console.WriteLine(opcode.ToString());
+				}
 				il.Emit(opcode);
 			}
 			
@@ -86,10 +95,23 @@ public class SpyGenerator {
 				// Finally:
 				push_local 0; // the array reference, third parameter for the call
 				call SpiedObject.RegisterCall;
+			
+			
+			
+			Also, if the function returns void:
 				return; // every function needs a return instruction at the end, otherwise it's invalid
 			
+			If the function returns a reference type:
+				ld_null;
+				return;
+			
+			If the function returns value type, it's this in C#:
+				return Activator.CreateInstance(currentMethod.ReturnType);
+			In CIL:
+				
+			
 			 */
-
+			
 			// Load this
 			IlEmit(OpCodes.Ldarg, 0);
 			
@@ -100,7 +122,7 @@ public class SpyGenerator {
 			// Allocate array
 			IlEmit(OpCodes.Ldc_I4, interfaceMethodParameters.Length); // desired array length
 			IlEmit(OpCodes.Newarr, typeof(object)); // pop the stack item, and push a reference to an array with that size.
-			IlEmit2(OpCodes.Stloc_0); // store the array reference in local 0.
+			IlEmit(OpCodes.Stloc, argsArray); // store the array reference in a local.
 			
 			// Populate the array
 			for (int i = 0; i < interfaceMethodParameters.Length; i++) {
@@ -110,7 +132,7 @@ public class SpyGenerator {
 				// arg 0: this (not visible to c# reflection)
 				// arg 1: MethodInfo
 				// arg 2+: actual args
-				IlEmit2(OpCodes.Ldloc_0); // Push the array reference
+				IlEmit(OpCodes.Ldloc, argsArray); // Push the array reference
 				IlEmit(OpCodes.Ldc_I4, i); // Push the index
 				IlEmit(OpCodes.Ldarg, i + 1); // Push the value
 				if (pi.ParameterType.IsValueType) {
@@ -119,16 +141,38 @@ public class SpyGenerator {
 				IlEmit2(OpCodes.Stelem_Ref); // Pop 3 items and do the store operation
 			}
 			
-			// Push the array reference in local 0 to the stack.
-			IlEmit2(OpCodes.Ldloc_0);
-			
+			IlEmit(OpCodes.Ldloc, argsArray);
 			IlEmit(OpCodes.Call, registerCallMethod);
-			IlEmit2(OpCodes.Ret);
+
+			if (spiedMethod.ReturnType != typeof(void)) {
+				if (spiedMethod.ReturnType.IsGenericType && spiedMethod.ReturnType.GetGenericTypeDefinition() == typeof(Task<>)) {
+					IlEmit2(OpCodes.Ldnull);
+
+					if (spiedMethod.ReturnType.GenericTypeArguments[0].IsValueType) {
+						IlEmit2(OpCodes.Box);
+					}
+					
+					MethodInfo fromResult = typeof(Task).GetMethod(nameof(Task.FromResult))!;
+					IlEmit(OpCodes.Call, fromResult.MakeGenericMethod(spiedMethod.ReturnType.GenericTypeArguments[0]));
+				} else if (spiedMethod.ReturnType == typeof(Task)) {
+					PropertyInfo completedTask = typeof(Task).GetProperty(nameof(Task.CompletedTask))!;
+					IlEmit(OpCodes.Call, completedTask.GetMethod!); 
+				} else {
+					// Works for reference and value types
+					IlEmit2(OpCodes.Ldnull);
+				}
+			}
 			
+			IlEmit2(OpCodes.Ret);
+
+			if (printIl) {
+				Console.WriteLine();
+			}
+		}
+		if (printIl) {
+			Console.WriteLine();
 			Console.WriteLine();
 		}
-		Console.WriteLine();
-		Console.WriteLine();
 
 		spiedType = typeBuilder.CreateType() ?? throw new Exception("what the fuck? 3");
 		m_SpiedTypes.Add(typeT, spiedType);
