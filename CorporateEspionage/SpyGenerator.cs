@@ -8,7 +8,7 @@ public class SpyGenerator {
 	private ModuleBuilder? m_ModuleBuilder;
 	private readonly Dictionary<Type, Type> m_SpiedTypes = new();
 
-	public Spy<T> CreateSpy<T>(bool printIl = true) where T : class {
+	public Spy<T> CreateSpy<T>(bool printIl = false) where T : class {
 		Type typeT = typeof(T);
 		if (m_SpiedTypes.TryGetValue(typeT, out Type? spiedType)) {
 			return new Spy<T>((T) Activator.CreateInstance(spiedType)!);
@@ -46,6 +46,8 @@ public class SpyGenerator {
 			// https://en.wikipedia.org/wiki/List_of_CIL_instructions
 			ILGenerator il = spiedMethod.GetILGenerator();
 			LocalBuilder argsArray = il.DeclareLocal(typeof(object[]));
+			LocalBuilder currentMethod = il.DeclareLocal(typeof(MethodInfo));
+			LocalBuilder rth = il.DeclareLocal(typeof(string));
 			
 			void IlEmit(OpCode opcode, dynamic parameter) {
 				if (printIl) {
@@ -99,16 +101,15 @@ public class SpyGenerator {
 			
 			
 			Also, if the function returns void:
-				return; // every function needs a return instruction at the end, otherwise it's invalid
+				return; // every CIL function needs a return instruction at the end, otherwise it's invalid
 			
-			If the function returns a reference type:
-				ld_null;
+			Otherwise:
+				return this.GetDefaultValue<return type>();
+			
+			This becomes CIL:
+				push_arg 0; // `this` reference
+				call GetDefaultValue[return type()]; // the method is defined below, with the generic parameter, and passed into the IL generator
 				return;
-			
-			If the function returns value type, it's this in C#:
-				return Activator.CreateInstance(currentMethod.ReturnType);
-			In CIL:
-				
 			
 			 */
 			
@@ -117,6 +118,9 @@ public class SpyGenerator {
 			
 			// Load result of MethodBase.GetCurrentMethod()
 			IlEmit(OpCodes.Call, getCurrentMethodMethod);
+			// And store in local (keep on stack)
+			IlEmit(OpCodes.Stloc, currentMethod);
+			IlEmit(OpCodes.Ldloc, currentMethod);
 			
 			// Load parameters:
 			// Allocate array
@@ -145,22 +149,9 @@ public class SpyGenerator {
 			IlEmit(OpCodes.Call, registerCallMethod);
 
 			if (spiedMethod.ReturnType != typeof(void)) {
-				if (spiedMethod.ReturnType.IsGenericType && spiedMethod.ReturnType.GetGenericTypeDefinition() == typeof(Task<>)) {
-					IlEmit2(OpCodes.Ldnull);
-
-					if (spiedMethod.ReturnType.GenericTypeArguments[0].IsValueType) {
-						IlEmit2(OpCodes.Box);
-					}
-					
-					MethodInfo fromResult = typeof(Task).GetMethod(nameof(Task.FromResult))!;
-					IlEmit(OpCodes.Call, fromResult.MakeGenericMethod(spiedMethod.ReturnType.GenericTypeArguments[0]));
-				} else if (spiedMethod.ReturnType == typeof(Task)) {
-					PropertyInfo completedTask = typeof(Task).GetProperty(nameof(Task.CompletedTask))!;
-					IlEmit(OpCodes.Call, completedTask.GetMethod!); 
-				} else {
-					// Works for reference and value types
-					IlEmit2(OpCodes.Ldnull);
-				}
+				IlEmit(OpCodes.Ldarg, 0);
+				MethodInfo getDefaultValue = typeof(SpiedObject).GetMethod(nameof(SpiedObject.GetDefaultValue), 1, BindingFlags.Instance | BindingFlags.NonPublic, null, Array.Empty<Type>(), null) ?? throw new Exception("what the fuck? 6");
+				IlEmit(OpCodes.Call, getDefaultValue.MakeGenericMethod(spiedMethod.ReturnType));
 			}
 			
 			IlEmit2(OpCodes.Ret);
@@ -168,6 +159,8 @@ public class SpyGenerator {
 			if (printIl) {
 				Console.WriteLine();
 			}
+			
+			printIl = false;
 		}
 		if (printIl) {
 			Console.WriteLine();

@@ -1,6 +1,6 @@
 namespace CorporateEspionage.Tests;
 
-public class SetupSpyTests {
+public class SpyReturnsTests {
 	private SpyGenerator m_Generator;
 
 	[SetUp]
@@ -33,6 +33,12 @@ public class SetupSpyTests {
 	}
 
 	[Test]
+	public void StructReturningSpy() {
+		Spy<ITestInterface2> spy = m_Generator.CreateSpy<ITestInterface2>();
+		Assert.That(spy.Object.TestStruct(), Is.EqualTo(default(TestStruct)));
+	}
+
+	[Test]
 	public void TaskVoidReturningSpy() {
 		Spy<ITestInterface2> spy = m_Generator.CreateSpy<ITestInterface2>();
 		Assert.That(async () => await spy.Object.TestVoidAsync(), Throws.Nothing);
@@ -55,6 +61,12 @@ public class SetupSpyTests {
 		Spy<ITestInterface2> spy = m_Generator.CreateSpy<ITestInterface2>();
 		Assert.That(await spy.Object.TestStringAsync(), Is.EqualTo(null));
 	}
+
+	[Test]
+	public async Task TaskStructReturningSpy() {
+		Spy<ITestInterface2> spy = m_Generator.CreateSpy<ITestInterface2>();
+		Assert.That(await spy.Object.TestStructAsync(), Is.EqualTo(default(TestStruct)));
+	}
 }
 
 public interface ITestInterface2 {
@@ -62,8 +74,14 @@ public interface ITestInterface2 {
 	int TestInt();
 	bool TestBool();
 	string TestString();
+	TestStruct TestStruct();
 	Task TestVoidAsync();
 	Task<int> TestIntAsync();
 	Task<bool> TestBoolAsync();
 	Task<string> TestStringAsync();
+	Task<TestStruct> TestStructAsync();
+}
+
+public struct TestStruct {
+	public int field;
 }

@@ -2,7 +2,7 @@ using System.Reflection;
 
 namespace CorporateEspionage.Tests;
 
-public class SpyTests {
+public class SpyCallsTests {
 	private SpyGenerator m_Generator;
 	
 	[SetUp]
