@@ -1,6 +1,6 @@
 using System.Reflection;
 
-namespace FridgeBot.Tests.CorporateEspionage;
+namespace CorporateEspionage;
 
 public class Spy<T> where T : class {
 	private readonly SpiedObject m_SpiedObject;

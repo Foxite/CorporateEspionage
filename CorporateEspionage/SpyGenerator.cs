@@ -1,9 +1,7 @@
-using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Xml;
 
-namespace FridgeBot.Tests.CorporateEspionage; 
+namespace CorporateEspionage; 
 
 public class SpyGenerator {
 	private AssemblyBuilder? m_AssemblyBuilder;
@@ -25,6 +23,7 @@ public class SpyGenerator {
 
 		m_AssemblyBuilder ??= AssemblyBuilder.DefineDynamicAssembly(new AssemblyName("SpyAssembly"), AssemblyBuilderAccess.Run);
 		m_ModuleBuilder ??= m_AssemblyBuilder.DefineDynamicModule("SpyModule");
+		
 		TypeBuilder typeBuilder = m_ModuleBuilder.DefineType($"{typeT.FullName}Spy", TypeAttributes.Class, typeof(SpiedObject), new[] { typeT });
 
 		typeBuilder.DefineDefaultConstructor(MethodAttributes.Public);
@@ -92,7 +91,6 @@ public class SpyGenerator {
 		}
 		Console.WriteLine();
 		Console.WriteLine();
-		
 
 		spiedType = typeBuilder.CreateType() ?? throw new Exception("what the fuck? 3");
 		m_SpiedTypes.Add(typeT, spiedType);

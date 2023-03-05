@@ -1,6 +1,6 @@
 using System.Reflection;
 
-namespace FridgeBot.Tests.CorporateEspionage;
+namespace CorporateEspionage;
 
 public class CallParameters {
 	private readonly IReadOnlyList<object?> m_Parameters;

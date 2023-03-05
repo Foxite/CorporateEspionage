@@ -1,6 +1,6 @@
 using System.Reflection;
 
-namespace CorporateEspionage.Tests;
+namespace CorporateEspionage;
 
 public static class ReflectionUtil {
 	// https://stackoverflow.com/a/50108844

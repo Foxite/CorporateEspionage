@@ -1,7 +1,6 @@
 using System.Reflection;
-using CorporateEspionage.Tests;
 
-namespace FridgeBot.Tests.CorporateEspionage;
+namespace CorporateEspionage;
 
 public abstract class SpiedObject {
 	internal readonly Dictionary<MethodInfo, List<CallParameters>> Calls;

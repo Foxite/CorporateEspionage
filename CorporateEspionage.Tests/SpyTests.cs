@@ -1,5 +1,4 @@
 using System.Reflection;
-using FridgeBot.Tests.CorporateEspionage;
 
 namespace CorporateEspionage.Tests;
 
@@ -18,6 +17,15 @@ public class SpyTests {
 		Assert.Multiple(() => {
 			Assert.That(spy, Is.Not.Null);
 			Assert.That(spy.Object, Is.Not.Null);
+			
+			Assert.That(() => spy.Object.Test1()         , Throws.Nothing);
+			Assert.That(() => spy.Object.Test2()         , Throws.Nothing);
+			Assert.That(() => spy.Object.Test3(12)       , Throws.Nothing);
+			Assert.That(() => spy.Object.Test3("hey")    , Throws.Nothing);
+			Assert.That(() => spy.Object.Test4("oi", 226), Throws.Nothing);
+			Assert.That(() => spy.Object.Test5("yo", 235), Throws.Nothing);
+			Assert.That(() => spy.Object.Test6()         , Throws.Nothing);
+			Assert.That(() => spy.Object.Test7(521)      , Throws.Nothing);
 		});
 	}
 
