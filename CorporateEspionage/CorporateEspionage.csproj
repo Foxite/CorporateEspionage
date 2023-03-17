@@ -9,6 +9,10 @@
         <RepositoryType>git</RepositoryType>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <RestoreSources>https://nuget.repo.corsac.nl/v3/index.json;https://api.nuget.org/v3/index.json</RestoreSources>
+    </PropertyGroup>
+
     <ItemGroup>
       <PackageReference Include="Foxite.Common" Version="1.8.2" />
     </ItemGroup>
