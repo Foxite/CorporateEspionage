@@ -2,6 +2,7 @@ on:
   push:
     tags:
     - "[0-9]+.[0-9]+.[0-9]+"
+  pull_request:
 
 jobs:
   build:
@@ -22,4 +23,5 @@ jobs:
     - name: Pack
       run: dotnet pack --configuration Release /p:Version=${VERSION} --no-build --output .
     - name: Push
+      if: ${{ github.event_name == 'push' && github.ref == 'master' }}
       run: dotnet nuget push CorporateEspionage.${VERSION}.nupkg --source https://nuget.repo.corsac.nl/v3/index.json --api-key ${{ secrets.PUSH_KEY }}
