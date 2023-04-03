@@ -21,6 +21,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\CorporateEspionage.NUnit\CorporateEspionage.NUnit.csproj" />
       <ProjectReference Include="..\CorporateEspionage\CorporateEspionage.csproj" />
     </ItemGroup>
 

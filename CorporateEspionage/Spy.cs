@@ -3,7 +3,7 @@ using System.Reflection;
 namespace CorporateEspionage;
 
 // TODO: setup return values
-public class Spy<T> where T : class {
+public class Spy<T> : ISpy where T : class {
 	private readonly SpiedObject m_SpiedObject;
 	
 	public T Object { get; }
@@ -26,10 +26,10 @@ public class Spy<T> where T : class {
 	}
 
 	public IReadOnlyList<CallParameters> GetCalls(MethodInfo method) {
-		return m_SpiedObject.Calls[method].AsReadonly();
+		return m_SpiedObject.Calls.TryGetValue(method, out List<CallParameters>? list) ? list.AsReadonly() : Array.Empty<CallParameters>();
 	}
 	
 	public CallParameters GetCallParameters(MethodInfo method, int invocation) {
-		return m_SpiedObject.Calls[method][invocation];
+		return GetCalls(method)[invocation];
 	}
 }
