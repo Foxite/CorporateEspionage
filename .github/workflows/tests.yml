@@ -1,7 +1,6 @@
 on:
-  push:
+  push: [ "!master" ]
   pull_request:
-  workflow_call:
 
 jobs:
   build:
