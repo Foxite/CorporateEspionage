@@ -6,7 +6,7 @@ jobs:
   # https://stackoverflow.com/a/71489231
   tests:
     runs-on: ubuntu-latest
-    uses: tests.yml  # use the callable tests job to run tests
+    uses: ./.github/workflows/tests.yml  # use the callable tests job to run tests
   deploy:
     name: deploy
     needs: [tests]  # require tests to pass before deploy runs
