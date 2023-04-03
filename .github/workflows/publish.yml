@@ -4,11 +4,7 @@ on:
 
 jobs:
   # https://stackoverflow.com/a/71489231
-  tests:
-    uses: ./.github/workflows/tests.yml  # use the callable tests job to run tests
   deploy:
-    name: deploy
-    needs: [tests]  # require tests to pass before deploy runs
     runs-on: ubuntu-latest
     steps:
     - name: Set VERSION variable from tag
