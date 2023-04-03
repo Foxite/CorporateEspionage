@@ -6,6 +6,10 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <RestoreSources>https://nuget.repo.corsac.nl/v3/index.json;https://api.nuget.org/v3/index.json</RestoreSources>
+    </PropertyGroup>
+dd .
     <ItemGroup>
       <PackageReference Include="NUnit" Version="3.13.3" />
     </ItemGroup>
