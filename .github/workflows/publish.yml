@@ -22,4 +22,6 @@ jobs:
     - name: Pack
       run: dotnet pack --configuration Release /p:Version=${VERSION} --no-build --output .
     - name: Push
-      run: dotnet nuget push CorporateEspionage.${VERSION}.nupkg --source https://nuget.repo.corsac.nl/v3/index.json --api-key ${{ secrets.PUSH_KEY }}
+      run: |
+      dotnet nuget push CorporateEspionage.${VERSION}.nupkg --source https://nuget.repo.corsac.nl/v3/index.json --api-key ${{ secrets.PUSH_KEY }}
+      dotnet nuget push CorporateEspionage.NUnit.${VERSION}.nupkg --source https://nuget.repo.corsac.nl/v3/index.json --api-key ${{ secrets.PUSH_KEY }}
