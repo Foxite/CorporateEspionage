@@ -7,6 +7,7 @@ public class CallParameters {
 	private readonly IReadOnlyList<Type> m_GenericParameters;
 
 	public MethodInfo MethodInfo { get; }
+	public bool Verified { get; set; } = false;
 	
 	internal CallParameters(MethodInfo methodInfo, IReadOnlyList<object?> parameters, IReadOnlyList<Type> genericParameters) {
 		m_Parameters = parameters;
