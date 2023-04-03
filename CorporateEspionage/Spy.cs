@@ -30,6 +30,6 @@ public class Spy<T> : ISpy where T : class {
 	}
 	
 	public CallParameters GetCallParameters(MethodInfo method, int invocation) {
-		return GetCalls(method)[invocation];
+		return m_SpiedObject.Calls[method][invocation];
 	}
 }
