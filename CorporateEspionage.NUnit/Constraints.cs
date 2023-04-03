@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Linq.Expressions;
+using System.Reflection;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
 
@@ -8,6 +9,15 @@ public static class Was {
 	public static ICalledConstraint Called(MethodInfo methodInfo) => new CalledExtensionsTarget(methodInfo);
 	public static CalledTimesConstraint NotCalled(MethodInfo methodInfo) => Called(methodInfo).Times(0);
 	public static NoOtherCallsConstraint NoOtherCalls(MethodInfo methodInfo) => new NoOtherCallsConstraint(methodInfo);
+	
+	public static ICalledConstraint Called(Expression<Action> expression) => Called(expression.GetMethodInfo());
+	public static CalledTimesConstraint NotCalled(Expression<Action> expression) => Called(expression.GetMethodInfo()).Times(0);
+	public static NoOtherCallsConstraint NoOtherCalls(Expression<Action> expression) => new NoOtherCallsConstraint(expression.GetMethodInfo());
+	
+	public static ICalledConstraint Called<T>(Expression<Func<T>> expression) where T : Delegate => Called(expression.GetMethodInfo());
+	public static CalledTimesConstraint NotCalled<T>(Expression<Func<T>> expression) where T : Delegate => Called(expression.GetMethodInfo()).Times(0);
+	public static NoOtherCallsConstraint NoOtherCalls<T>(Expression<Func<T>> expression) where T : Delegate => new NoOtherCallsConstraint(expression.GetMethodInfo());
+	
 	public static NoOtherCallsConstraint NoOtherCalls() => new NoOtherCallsConstraint(null);
 }
 
