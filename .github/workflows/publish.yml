@@ -3,20 +3,17 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  # https://stackoverflow.com/a/71489231
+  tests:
+    runs-on: ubuntu-latest
+    uses: ./.github/workflows/tests.yml  # use the callable tests job to run tests
+  deploy:
+    name: deploy
+    needs: [tests]  # require tests to pass before deploy runs
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        # needed to get tags
-        fetch-depth: 0
     - name: Set VERSION variable from tag
       run: echo "VERSION=$(git tag | head -n 1)" >> $GITHUB_ENV
-    - name: Build
-      run: dotnet build --configuration Release /p:Version=${VERSION}
-    - name: Test
-      run: dotnet test --configuration Release /p:Version=${VERSION} --no-build
     - name: Pack
       run: dotnet pack --configuration Release /p:Version=${VERSION} --no-build --output .
     - name: Push
