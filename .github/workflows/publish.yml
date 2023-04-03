@@ -14,7 +14,7 @@ jobs:
         # needed to get tags
         fetch-depth: 0
     - name: Set VERSION variable from tag
-      run: echo "VERSION=$(git tag | head -n 1)" >> $GITHUB_ENV
+      run: echo "VERSION=$(git tag | tail -n 1)" >> $GITHUB_ENV
     - name: Build
       run: dotnet build --configuration Release /p:Version=${VERSION}
     - name: Test
