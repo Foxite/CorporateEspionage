@@ -7,6 +7,7 @@ I couldn't figure out how to use Moq to run assertions on calls on mocked object
 - Supports methods with an arbitrary amount of parameters, with arbitrary types, or no parameters at all
 - Supports method with both void and non-void return types (and returns the default value for the type)
 - Supports methods that return Task or Task&lt;T&gt; (and return `Task.CompletedTask` or `Task.FromResult(default(T))` respectively)
+- Separate package offering NUnit constraints to make your job easier
 
 ### Planned features
 - Configure the return values of expected method invocations, sequentially or by parameter criteria
