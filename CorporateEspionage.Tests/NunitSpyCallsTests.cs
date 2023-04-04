@@ -335,11 +335,6 @@ public class NUnitSpyCallsTests {
 		spy.Object.Test3(124);
 		spy.Object.Test4("oya", 125125);
 
-		MethodInfo interfaceTest3 = typeof(ITestInterface).GetMethod(nameof(ITestInterface.Test3), new[] { typeof(int) })!;
-		MethodInfo interfaceTest3Wrong = typeof(ITestInterface).GetMethod(nameof(ITestInterface.Test3), new[] { typeof(string) })!;
-		MethodInfo interfaceTest4 = typeof(ITestInterface).GetMethod(nameof(ITestInterface.Test4))!;
-		MethodInfo interfaceTest5 = typeof(ITestInterface).GetMethod(nameof(ITestInterface.Test5))!;
-
 		Assert.Multiple(() => {
 			Assert.That(spy, Was.Called(() => spy.Object.Test3(0)).Times(2));
 			

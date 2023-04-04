@@ -82,9 +82,13 @@ public class CallParameterByNameConstraint : Constraint, ICalledConstraint {
 
 	public override ConstraintResult ApplyTo<TActual>(TActual actual) {
 		var spy = ConstraintUtils.RequireActual<ISpy>(actual, nameof(actual));
-		CallParameters callParameters = spy.GetCallParameters(MethodInfo, m_InvocationIndex);
-		callParameters.Verified = true;
-		return m_Constraint.ApplyTo(callParameters.GetParameter(m_ParameterName));
+		CallParameters? callParameters = spy.GetCallParameters(MethodInfo, m_InvocationIndex);
+		if (callParameters == null) {
+			return new ConstraintResult(this, null, false);
+		} else {
+			callParameters.Verified = true;
+			return m_Constraint.ApplyTo(callParameters.GetParameter(m_ParameterName));
+		}
 	}
 }
 

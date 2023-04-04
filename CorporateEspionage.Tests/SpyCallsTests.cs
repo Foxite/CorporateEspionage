@@ -57,11 +57,11 @@ public class SpyCallsTests {
 		spy.Object.Test1();
 		
 		MethodInfo interfaceTest1 = typeof(ITestInterface).GetMethod(nameof(ITestInterface.Test1))!;
-		CallParameters callParameters = spy.GetCallParameters(interfaceTest1, 0);
+		CallParameters? callParameters = spy.GetCallParameters(interfaceTest1, 0);
 
 		Assert.Multiple(() => {
 			Assert.That(callParameters, Is.Not.Null);
-			Assert.That(callParameters.MethodInfo, Is.EqualTo(interfaceTest1));
+			Assert.That(callParameters!.MethodInfo, Is.EqualTo(interfaceTest1));
 		});
 	}
 	
@@ -77,21 +77,21 @@ public class SpyCallsTests {
 		MethodInfo interfaceTest6 = typeof(ITestInterface).GetMethod(nameof(ITestInterface.Test6))!;
 
 		Assert.Multiple(() => {
-			Assert.Throws<ArgumentOutOfRangeException>(() => spy.GetCallParameters(interfaceTest1, 2));
-			Assert.Throws<ArgumentOutOfRangeException>(() => spy.GetCallParameters(interfaceTest2, 1));
-			Assert.Throws<KeyNotFoundException>(() => spy.GetCallParameters(interfaceTest6, 0));
+			Assert.That(() => spy.GetCallParameters(interfaceTest1, 2), Is.Null);
+			Assert.That(() => spy.GetCallParameters(interfaceTest2, 1), Is.Null);
+			Assert.That(() => spy.GetCallParameters(interfaceTest6, 0), Is.Null);
 
-			CallParameters callParameters = spy.GetCallParameters(interfaceTest1, 0);
+			CallParameters? callParameters = spy.GetCallParameters(interfaceTest1, 0);
 			Assert.That(callParameters, Is.Not.Null);
-			Assert.That(callParameters.MethodInfo, Is.EqualTo(interfaceTest1));
+			Assert.That(callParameters!.MethodInfo, Is.EqualTo(interfaceTest1));
 			
 			callParameters = spy.GetCallParameters(interfaceTest1, 1);
 			Assert.That(callParameters, Is.Not.Null);
-			Assert.That(callParameters.MethodInfo, Is.EqualTo(interfaceTest1));
+			Assert.That(callParameters!.MethodInfo, Is.EqualTo(interfaceTest1));
 			
 			callParameters = spy.GetCallParameters(interfaceTest2, 0);
 			Assert.That(callParameters, Is.Not.Null);
-			Assert.That(callParameters.MethodInfo, Is.EqualTo(interfaceTest2));
+			Assert.That(callParameters!.MethodInfo, Is.EqualTo(interfaceTest2));
 		});
 	}
 	
@@ -104,17 +104,17 @@ public class SpyCallsTests {
 		spy1.Object.Test7(5);
 		spy2.Object.Test7(7);
 		
-		CallParameters callParameters1 = spy1.GetCallParameters(interfaceTest7, 0);
-		CallParameters callParameters2 = spy2.GetCallParameters(interfaceTest7, 0);
+		CallParameters? callParameters1 = spy1.GetCallParameters(interfaceTest7, 0);
+		CallParameters? callParameters2 = spy2.GetCallParameters(interfaceTest7, 0);
 
 		Assert.Multiple(() => {
-			Assert.Throws<ArgumentOutOfRangeException>(() => spy1.GetCallParameters(interfaceTest7, 1));
-			Assert.Throws<ArgumentOutOfRangeException>(() => spy2.GetCallParameters(interfaceTest7, 1));
+			Assert.That(() => spy1.GetCallParameters(interfaceTest7, 1), Is.Null);
+			Assert.That(() => spy2.GetCallParameters(interfaceTest7, 1), Is.Null);
 			
 			Assert.That(callParameters1, Is.Not.Null);
 			Assert.That(callParameters2, Is.Not.Null);
-			Assert.That(callParameters1.MethodInfo, Is.EqualTo(interfaceTest7));
-			Assert.That(callParameters2.MethodInfo, Is.EqualTo(interfaceTest7));
+			Assert.That(callParameters1!.MethodInfo, Is.EqualTo(interfaceTest7));
+			Assert.That(callParameters2!.MethodInfo, Is.EqualTo(interfaceTest7));
 			
 			Assert.That(callParameters1.GetParameter(0    ), Is.EqualTo(5));
 			Assert.That(callParameters1.GetParameter("hey"), Is.EqualTo(5));
@@ -133,19 +133,19 @@ public class SpyCallsTests {
 		MethodInfo interfaceTest3Str = typeof(ITestInterface).GetMethod(nameof(ITestInterface.Test3), new[] { typeof(string) })!;
 		MethodInfo interfaceTest3Int = typeof(ITestInterface).GetMethod(nameof(ITestInterface.Test3), new[] { typeof(int) })!;
 		
-		CallParameters callParameters1 = spy1.GetCallParameters(interfaceTest3Str, 0);
-		CallParameters callParameters2 = spy2.GetCallParameters(interfaceTest3Int, 0);
+		CallParameters? callParameters1 = spy1.GetCallParameters(interfaceTest3Str, 0);
+		CallParameters? callParameters2 = spy2.GetCallParameters(interfaceTest3Int, 0);
 
 		Assert.Multiple(() => {
-			Assert.Throws<ArgumentOutOfRangeException>(() => spy1.GetCallParameters(interfaceTest3Str, 1));
-			Assert.Throws<ArgumentOutOfRangeException>(() => spy2.GetCallParameters(interfaceTest3Int, 1));
-			Assert.Throws<KeyNotFoundException>(() => spy1.GetCallParameters(interfaceTest3Int, 0));
-			Assert.Throws<KeyNotFoundException>(() => spy2.GetCallParameters(interfaceTest3Str, 0));
+			Assert.That(() => spy1.GetCallParameters(interfaceTest3Str, 1), Is.Null);
+			Assert.That(() => spy2.GetCallParameters(interfaceTest3Int, 1), Is.Null);
+			Assert.That(() => spy1.GetCallParameters(interfaceTest3Int, 0), Is.Null);
+			Assert.That(() => spy2.GetCallParameters(interfaceTest3Str, 0), Is.Null);
 
 			Assert.That(callParameters1, Is.Not.Null);
 			Assert.That(callParameters2, Is.Not.Null);
-			Assert.That(callParameters1.MethodInfo, Is.EqualTo(interfaceTest3Str));
-			Assert.That(callParameters2.MethodInfo, Is.EqualTo(interfaceTest3Int));
+			Assert.That(callParameters1!.MethodInfo, Is.EqualTo(interfaceTest3Str));
+			Assert.That(callParameters2!.MethodInfo, Is.EqualTo(interfaceTest3Int));
 			
 			Assert.That(callParameters1.GetParameter(0    ), Is.EqualTo("yo"));
 			Assert.That(callParameters1.GetParameter("ho" ), Is.EqualTo("yo"));
@@ -155,7 +155,8 @@ public class SpyCallsTests {
 	}
 	
 	[Test]
-	public void RegistersMultipleParameterCall() {
+	public void RegistersMultipleParameterCall()
+	{
 		MethodInfo interfaceTest4 = typeof(ITestInterface).GetMethod(nameof(ITestInterface.Test4), new[] { typeof(string), typeof(int) })!;
 		MethodInfo interfaceTest5 = typeof(ITestInterface).GetMethod(nameof(ITestInterface.Test5), new[] { typeof(string), typeof(int) })!;
 		
@@ -164,14 +165,14 @@ public class SpyCallsTests {
 		spy1.Object.Test4("ello", 235);
 		spy2.Object.Test5("yttg", 523);
 		
-		CallParameters callParameters1 = spy1.GetCallParameters(interfaceTest4, 0);
-		CallParameters callParameters2 = spy2.GetCallParameters(interfaceTest5, 0);
-
+		CallParameters? callParameters1 = spy1.GetCallParameters(interfaceTest4, 0);
+		CallParameters? callParameters2 = spy2.GetCallParameters(interfaceTest5, 0);
+		
 		Assert.Multiple(() => {
 			Assert.That(callParameters1, Is.Not.Null);
 			Assert.That(callParameters2, Is.Not.Null);
-			Assert.That(callParameters1.MethodInfo, Is.EqualTo(interfaceTest4));			
-			Assert.That(callParameters2.MethodInfo, Is.EqualTo(interfaceTest5));
+			Assert.That(callParameters1!.MethodInfo, Is.EqualTo(interfaceTest4));
+			Assert.That(callParameters2!.MethodInfo, Is.EqualTo(interfaceTest5));
 
 			Assert.That(callParameters1.GetParameter(0    ), Is.EqualTo("ello"));
 			Assert.That(callParameters1.GetParameter("yo" ), Is.EqualTo("ello"));
@@ -184,7 +185,7 @@ public class SpyCallsTests {
 			Assert.That(callParameters2.GetParameter("hey"), Is.EqualTo(523));
 		});
 	}
-	
+
 	[Test]
 	public void RegistersMultipleParameterCalls() {
 		Spy<ITestInterface> spy = m_Generator.CreateSpy<ITestInterface>();
@@ -198,26 +199,26 @@ public class SpyCallsTests {
 		MethodInfo interfaceTest5 = typeof(ITestInterface).GetMethod(nameof(ITestInterface.Test5))!;
 
 		Assert.Multiple(() => {
-			Assert.Throws<ArgumentOutOfRangeException>(() => spy.GetCallParameters(interfaceTest3, 2));
-			Assert.Throws<ArgumentOutOfRangeException>(() => spy.GetCallParameters(interfaceTest4, 1));
-			Assert.Throws<KeyNotFoundException>(() => spy.GetCallParameters(interfaceTest5, 0));
-			Assert.Throws<KeyNotFoundException>(() => spy.GetCallParameters(interfaceTest3Wrong, 0));
+			Assert.That(() => spy.GetCallParameters(interfaceTest3, 2), Is.Null);
+			Assert.That(() => spy.GetCallParameters(interfaceTest4, 1), Is.Null);
+			Assert.That(() => spy.GetCallParameters(interfaceTest5, 0), Is.Null);
+			Assert.That(() => spy.GetCallParameters(interfaceTest3Wrong, 0), Is.Null);
 
-			CallParameters callParameters = spy.GetCallParameters(interfaceTest3, 0);
+			CallParameters? callParameters = spy.GetCallParameters(interfaceTest3, 0);
 			Assert.That(callParameters, Is.Not.Null);
-			Assert.That(callParameters.MethodInfo, Is.EqualTo(interfaceTest3));
+			Assert.That(callParameters!.MethodInfo, Is.EqualTo(interfaceTest3));
 			Assert.That(callParameters.GetParameter("hey"), Is.EqualTo(512));
 			Assert.That(callParameters.GetParameter(0    ), Is.EqualTo(512));
 
 			callParameters = spy.GetCallParameters(interfaceTest3, 1);
 			Assert.That(callParameters, Is.Not.Null);
-			Assert.That(callParameters.MethodInfo, Is.EqualTo(interfaceTest3));
+			Assert.That(callParameters!.MethodInfo, Is.EqualTo(interfaceTest3));
 			Assert.That(callParameters.GetParameter("hey"), Is.EqualTo(124));
 			Assert.That(callParameters.GetParameter(0    ), Is.EqualTo(124));
 
 			callParameters = spy.GetCallParameters(interfaceTest4, 0);
 			Assert.That(callParameters, Is.Not.Null);
-			Assert.That(callParameters.MethodInfo, Is.EqualTo(interfaceTest4));
+			Assert.That(callParameters!.MethodInfo, Is.EqualTo(interfaceTest4));
 			Assert.That(callParameters.GetParameter("yo" ), Is.EqualTo("oya"));
 			Assert.That(callParameters.GetParameter(0    ), Is.EqualTo("oya"));
 			Assert.That(callParameters.GetParameter("hey"), Is.EqualTo(125125));

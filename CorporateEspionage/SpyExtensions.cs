@@ -8,7 +8,15 @@ public static class SpyExtensions {
 	
 	public static int GetCallCount(this ISpy spy, MethodInfo method) => spy.GetCalls().TryGetValue(method, out IReadOnlyList<CallParameters>? calls) ? calls.Count : 0;
 	public static IReadOnlyList<CallParameters> GetCalls(this ISpy spy, MethodInfo method) => spy.GetCalls().TryGetValue(method, out IReadOnlyList<CallParameters>? list) ? list : Array.Empty<CallParameters>();
-	public static CallParameters GetCallParameters(this ISpy spy, MethodInfo method, int invocation) => spy.GetCalls()[method][invocation];
+
+	public static CallParameters? GetCallParameters(this ISpy spy, MethodInfo method, int invocation) {
+		IReadOnlyList<CallParameters> calls = spy.GetCalls(method);
+		if (invocation < calls.Count) {
+			return calls[invocation];
+		} else {
+			return null;
+		}
+	}
 
 	public static MethodInfo GetMethodInfo<TDelegate>(this Expression<TDelegate> @delegate) where TDelegate : Delegate {
 		if (@delegate.Body is not MethodCallExpression mce) {
