@@ -368,4 +368,29 @@ public class NUnitSpyCallsTests {
 			Assert.That(spy, Was.NoOtherCalls());
 		});
 	}
+
+	[Test]
+	public void ConstraintsFail() {
+		Spy<ITestInterface> spy = m_Generator.CreateSpy<ITestInterface>();
+		spy.Object.Test3(235);
+
+		Assert.Multiple(() => {
+			Assert.That(() => Assert.That(spy, Was.NotCalled(() => spy.Object.Test3(0))), Throws.InstanceOf<AssertionException>());
+			Assert.That(() => Assert.That(spy, Was.Called(() => spy.Object.Test3(0)).Times(2)), Throws.InstanceOf<AssertionException>());
+			Assert.That(() => Assert.That(spy, Was.Called(() => spy.Object.Test3(0)).With(0, 0, 234)), Throws.InstanceOf<AssertionException>());
+			Assert.That(() => Assert.That(spy, Was.Called(() => spy.Object.Test3(0)).With(0, 1, 235)), Throws.InstanceOf<ArgumentOutOfRangeException>());
+			Assert.That(() => Assert.That(spy, Was.Called(() => spy.Object.Test3(0)).With(1, 0, 235)), Throws.InstanceOf<AssertionException>());
+			Assert.That(() => Assert.That(spy, Was.Called(() => spy.Object.Test3(0)).With(0, 1, 234)), Throws.InstanceOf<ArgumentOutOfRangeException>());
+			Assert.That(() => Assert.That(spy, Was.Called(() => spy.Object.Test3(0)).With(1, 0, 234)), Throws.InstanceOf<AssertionException>());
+			Assert.That(() => Assert.That(spy, Was.Called(() => spy.Object.Test3(0)).With(1, 1, 234)), Throws.InstanceOf<AssertionException>());
+
+			Assert.That(() => Assert.That(spy, Was.Called(() => spy.Object.Test3(0)).Times(2).With(0, 0, 235)), Throws.InstanceOf<AssertionException>());
+			Assert.That(() => Assert.That(spy, Was.Called(() => spy.Object.Test3(0)).Times(2).With(0, 0, 234)), Throws.InstanceOf<AssertionException>());
+			Assert.That(() => Assert.That(spy, Was.Called(() => spy.Object.Test3(0)).Times(2).With(0, 1, 235)), Throws.InstanceOf<AssertionException>());
+			Assert.That(() => Assert.That(spy, Was.Called(() => spy.Object.Test3(0)).Times(2).With(1, 0, 235)), Throws.InstanceOf<AssertionException>());
+			Assert.That(() => Assert.That(spy, Was.Called(() => spy.Object.Test3(0)).Times(2).With(0, 1, 234)), Throws.InstanceOf<AssertionException>());
+			Assert.That(() => Assert.That(spy, Was.Called(() => spy.Object.Test3(0)).Times(2).With(1, 0, 234)), Throws.InstanceOf<AssertionException>());
+			Assert.That(() => Assert.That(spy, Was.Called(() => spy.Object.Test3(0)).Times(2).With(1, 1, 234)), Throws.InstanceOf<AssertionException>());
+		});
+	}
 }

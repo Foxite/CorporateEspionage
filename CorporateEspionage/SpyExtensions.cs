@@ -28,9 +28,9 @@ public static class SpyExtensions {
 
 	public static int GetCallCount<T>(this ISpy spy, Expression<Func<T>> method) => spy.GetCallCount(method.GetMethodInfo());
 	public static IReadOnlyList<CallParameters> GetCalls<T>(this ISpy spy, Expression<Func<T>> method) => spy.GetCalls(method.GetMethodInfo());
-	public static CallParameters GetCallParameters<T>(this ISpy spy, Expression<Func<T>> method, int invocation) => spy.GetCallParameters(method.GetMethodInfo(), invocation);
+	public static CallParameters? GetCallParameters<T>(this ISpy spy, Expression<Func<T>> method, int invocation) => spy.GetCallParameters(method.GetMethodInfo(), invocation);
 
 	public static int GetCallCount(this ISpy spy, Expression<Action> method) => spy.GetCallCount(method.GetMethodInfo());
 	public static IReadOnlyList<CallParameters> GetCalls(this ISpy spy, Expression<Action> method) => spy.GetCalls(method.GetMethodInfo());
-	public static CallParameters GetCallParameters(this ISpy spy, Expression<Action> method, int invocation) => spy.GetCallParameters(method.GetMethodInfo(), invocation);
+	public static CallParameters? GetCallParameters(this ISpy spy, Expression<Action> method, int invocation) => spy.GetCallParameters(method.GetMethodInfo(), invocation);
 }
