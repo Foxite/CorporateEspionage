@@ -393,4 +393,17 @@ public class NUnitSpyCallsTests {
 			Assert.That(() => Assert.That(spy, Was.Called(() => spy.Object.Test3(0)).Times(2).With(1, 1, 234)), Throws.InstanceOf<AssertionException>());
 		});
 	}
+	
+	
+	[Test]
+	public void ConstraintsHandleChainedConstraints() {
+		Spy<ITestInterface> spy = m_Generator.CreateSpy<ITestInterface>();
+		spy.Object.Test4("oya", 125125);
+
+		Assert.Multiple(() => {
+			// TODO: test with Times(). I don't know what kind of ResolveConstraint there are on int
+			Assert.That(spy, Was.Called(() => spy.Object.Test4("", 0)).With(0, "yo", Has.Property(nameof(string.Length)).EqualTo(3)));
+			Assert.That(spy, Was.Called(() => spy.Object.Test4("", 0)).With(0, 0, Has.Property(nameof(string.Length)).EqualTo(3)));
+		});
+	}
 }

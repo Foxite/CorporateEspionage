@@ -73,7 +73,8 @@ public class CallParameterByIndexConstraint : SpyConstraint {
 			return new ConstraintResult(this, null, false);
 		} else {
 			callParameters.Verified = true;
-			return m_Constraint.ApplyTo(callParameters.GetParameter(m_ParameterIndex));
+			IConstraint resolvedConstraint = ((IResolveConstraint) m_Constraint).Resolve();
+			return resolvedConstraint.ApplyTo(callParameters.GetParameter(m_ParameterIndex));
 		}
 	}
 }
@@ -95,7 +96,8 @@ public class CallParameterByNameConstraint : SpyConstraint {
 			return new ConstraintResult(this, null, false);
 		} else {
 			callParameters.Verified = true;
-			return m_Constraint.ApplyTo(callParameters.GetParameter(m_ParameterName));
+			IConstraint resolvedConstraint = ((IResolveConstraint) m_Constraint).Resolve();
+			return resolvedConstraint.ApplyTo(callParameters.GetParameter(m_ParameterName));
 		}
 	}
 }
@@ -114,7 +116,8 @@ public class SpyTimesConstraint : SpyConstraint {
 			call.Verified = true;
 		}
 		
-		return m_Constraint.ApplyTo(calls.Count);
+		IConstraint resolvedConstraint = ((IResolveConstraint) m_Constraint).Resolve();
+		return resolvedConstraint.ApplyTo(calls.Count);
 	}
 }
 
