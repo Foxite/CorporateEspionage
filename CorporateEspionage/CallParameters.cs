@@ -5,13 +5,15 @@ namespace CorporateEspionage;
 public class CallParameters {
 	public IReadOnlyList<object?> Parameters { get; }
 	public IReadOnlyList<Type> GenericParameters { get; }
+	public bool Ignored { get; }
 
 	public MethodInfo MethodInfo { get; }
 	public bool Verified { get; set; } = false;
 	
-	internal CallParameters(MethodInfo methodInfo, IReadOnlyList<object?> parameters, IReadOnlyList<Type> genericParameters) {
+	internal CallParameters(MethodInfo methodInfo, IReadOnlyList<object?> parameters, IReadOnlyList<Type> genericParameters, bool ignored) {
 		Parameters = parameters;
 		GenericParameters = genericParameters;
+		Ignored = ignored;
 		MethodInfo = methodInfo;
 	}
 

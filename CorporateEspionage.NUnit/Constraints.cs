@@ -8,7 +8,7 @@ namespace CorporateEspionage.NUnit;
 public static class Was {
 	public static SpyConstraint Called(MethodInfo methodInfo) => new SpyTimesConstraint(methodInfo, null, Is.GreaterThan(0));
 	public static SpyTimesConstraint NotCalled(MethodInfo methodInfo) => new SpyTimesConstraint(methodInfo, null, Is.EqualTo(0));
-	public static NoOtherCallsConstraint NoOtherCalls(MethodInfo methodInfo) => new NoOtherCallsConstraint(methodInfo, null);
+	public static NoOtherCallsConstraint NoOtherCalls(MethodInfo methodInfo) => new NoOtherCallsConstraint(methodInfo, null, false);
 	
 	public static SpyConstraint Called(Expression<Action> expression) => Called(expression.GetMethodInfo());
 	public static SpyTimesConstraint NotCalled(Expression<Action> expression) => NotCalled(expression.GetMethodInfo());
@@ -18,7 +18,7 @@ public static class Was {
 	public static SpyTimesConstraint NotCalled<T>(Expression<Func<T>> expression) where T : Delegate => NotCalled(expression.GetMethodInfo());
 	public static NoOtherCallsConstraint NoOtherCalls<T>(Expression<Func<T>> expression) where T : Delegate => NoOtherCalls(expression.GetMethodInfo());
 	
-	public static NoOtherCallsConstraint NoOtherCalls() => new NoOtherCallsConstraint(null, null);
+	public static NoOtherCallsConstraint NoOtherCalls() => new NoOtherCallsConstraint(null, null, false);
 }
 
 public static class CalledConstraintExtensions {
@@ -122,7 +122,11 @@ public class SpyTimesConstraint : SpyConstraint {
 }
 
 public class NoOtherCallsConstraint : SpyConstraint {
-	public NoOtherCallsConstraint(MethodInfo? methodInfo, Constraint? @base) : base(methodInfo, @base) { }
+	public bool IncludeIgnored { get; }
+	
+	public NoOtherCallsConstraint(MethodInfo? methodInfo, Constraint? @base, bool includeIgnored) : base(methodInfo, @base) {
+		IncludeIgnored = includeIgnored;
+	}
 
 	protected override ConstraintResult ApplyTo(ISpy spy) {
 		IEnumerable<CallParameters> callParameters;
@@ -132,7 +136,7 @@ public class NoOtherCallsConstraint : SpyConstraint {
 			callParameters = spy.GetCalls(MethodInfo);
 		}
 		
-		int count = callParameters.Count(cp => !cp.Verified);
+		int count = callParameters.Count(cp => !cp.Verified && (IncludeIgnored || !cp.Ignored));
 		return new ConstraintResult(this, count, count == 0);
 	}
 }
