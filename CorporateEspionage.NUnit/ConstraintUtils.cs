@@ -4,8 +4,7 @@ namespace CorporateEspionage.NUnit;
 /// Provides methods to support consistent checking in constraints.
 /// Stolen from NUnit.
 /// </summary>
-internal static class ConstraintUtils
-{
+internal static class ConstraintUtils {
 	/// <summary>
 	/// Requires that the provided object is actually of the type required.
 	/// </summary>

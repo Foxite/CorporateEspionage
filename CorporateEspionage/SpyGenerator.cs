@@ -18,8 +18,9 @@ public class SpyGenerator {
 			throw new ArgumentException("Type must be an interface type");
 		}
 
-		MethodInfo registerCallMethod     = typeof(SpiedObject).GetMethod(nameof(SpiedObject.RegisterCall   )) ?? throw new Exception("what the fuck? 1");
-		MethodInfo getCurrentMethodMethod = typeof(MethodBase ).GetMethod(nameof(MethodBase.GetCurrentMethod)) ?? throw new Exception("what the fuck? 2");
+		MethodInfo onCallVoidMethod       = typeof(SpiedObject).GetMethod(nameof(SpiedObject.OnCallVoid     )) ?? throw new Exception($"{nameof(SpiedObject)}.{nameof(SpiedObject.OnCallVoid)} is missing");
+		MethodInfo onCallValueMethod      = typeof(SpiedObject).GetMethod(nameof(SpiedObject.OnCallValue    )) ?? throw new Exception($"{nameof(SpiedObject)}.{nameof(SpiedObject.OnCallValue)} is missing");
+		MethodInfo getCurrentMethodMethod = typeof(MethodBase ).GetMethod(nameof(MethodBase.GetCurrentMethod)) ?? throw new Exception($"{nameof(MethodBase)}.{nameof(MethodBase.GetCurrentMethod)} is missing");
 
 		m_AssemblyBuilder ??= AssemblyBuilder.DefineDynamicAssembly(new AssemblyName("SpyAssembly"), AssemblyBuilderAccess.Run);
 		m_ModuleBuilder ??= m_AssemblyBuilder.DefineDynamicModule("SpyModule");
@@ -145,12 +146,14 @@ public class SpyGenerator {
 			}
 			
 			IlEmit(OpCodes.Ldloc, argsArray);
-			IlEmit(OpCodes.Call, registerCallMethod);
+			if (spiedMethod.ReturnType == typeof(void)) {
+				IlEmit(OpCodes.Call, onCallVoidMethod);
+			} else {
+				IlEmit(OpCodes.Call, onCallValueMethod);
 
-			if (spiedMethod.ReturnType != typeof(void)) {
-				IlEmit(OpCodes.Ldarg, 0);
-				MethodInfo getDefaultValue = typeof(SpiedObject).GetMethod(nameof(SpiedObject.GetDefaultValue), 1, BindingFlags.Instance | BindingFlags.NonPublic, null, Array.Empty<Type>(), null) ?? throw new Exception("what the fuck? 6");
-				IlEmit(OpCodes.Call, getDefaultValue.MakeGenericMethod(spiedMethod.ReturnType));
+				if (spiedMethod.ReturnType.IsValueType) {
+					IlEmit(OpCodes.Unbox_Any, interfaceMethod.ReturnType);
+				}
 			}
 			
 			IlEmit2(OpCodes.Ret);
@@ -159,7 +162,7 @@ public class SpyGenerator {
 				Console.WriteLine();
 			}
 			
-			printIl = false;
+			//printIl = false;
 		}
 		if (printIl) {
 			Console.WriteLine();
