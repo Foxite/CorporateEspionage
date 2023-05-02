@@ -18,7 +18,7 @@ public class SpyGenerator {
 			throw new ArgumentException("Type must be an interface type");
 		}
 
-		MethodInfo registerCallMethod     = typeof(SpiedObject).GetMethod(nameof(SpiedObject.RegisterCall   )) ?? throw new Exception("what the fuck? 1");
+		MethodInfo registerCallMethod     = typeof(SpiedObject).GetMethod(nameof(SpiedObject.OnCall   )) ?? throw new Exception("what the fuck? 1");
 		MethodInfo getCurrentMethodMethod = typeof(MethodBase ).GetMethod(nameof(MethodBase.GetCurrentMethod)) ?? throw new Exception("what the fuck? 2");
 
 		m_AssemblyBuilder ??= AssemblyBuilder.DefineDynamicAssembly(new AssemblyName("SpyAssembly"), AssemblyBuilderAccess.Run);

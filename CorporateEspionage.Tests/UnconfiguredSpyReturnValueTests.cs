@@ -1,6 +1,6 @@
 namespace CorporateEspionage.Tests;
 
-public class SpyReturnsTests {
+public class UnconfiguredSpyReturnValueTests {
 	private SpyGenerator m_Generator;
 
 	[SetUp]
