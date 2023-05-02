@@ -15,7 +15,6 @@
 
     <ItemGroup>
       <PackageReference Include="Foxite.Common" Version="1.9.0" />
-      <PackageReference Include="Optional" Version="4.0.0" />
     </ItemGroup>
 
 </Project>

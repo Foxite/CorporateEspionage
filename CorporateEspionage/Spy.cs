@@ -14,9 +14,9 @@ public class Spy<T> : ISpy where T : class {
 	}
 
 	public IReadOnlyDictionary<MethodInfo, IReadOnlyList<CallParameters>> GetCalls() => m_SpiedObject.GetCalls();
-	public void ConfigureCallByIndex(MethodInfo method, int index, Func<object?> factory) => m_SpiedObject.ConfigureCallByIndex(method, index, factory);
-	public void ConfigureCallByMatcher(MethodInfo method, InvocationMatcher matcher) => m_SpiedObject.ConfigureCallByMatcher(method, matcher);
 	
-	public void ConfigureCallByIndex<TDelegate>(Expression<TDelegate> expression, int index, Func<object?> factory) where TDelegate : Delegate => m_SpiedObject.ConfigureCallByIndex(expression.GetMethodInfo(), index, factory);
-	public void ConfigureCallByMatcher<TDelegate>(Expression<TDelegate> expression, InvocationMatcher matcher) where TDelegate : Delegate => m_SpiedObject.ConfigureCallByMatcher(expression.GetMethodInfo(), matcher);
+	public void ConfigureCall(MethodInfo method, InvocationPredicate predicate, Func<object?> factory) => m_SpiedObject.ConfigureCall(method, predicate, factory);
+	public void ConfigureCall(MethodInfo method, InvocationPredicate predicate, object? value) => m_SpiedObject.ConfigureCall(method, predicate, () => value);
+	public void ConfigureCall<TRet>(Expression<Func<T, TRet>> expression, InvocationPredicate predicate, Func<TRet> factory) => m_SpiedObject.ConfigureCall(expression.GetMethodInfo(), predicate, () => factory());
+	public void ConfigureCall<TRet>(Expression<Func<T, TRet>> expression, InvocationPredicate predicate, TRet value) => m_SpiedObject.ConfigureCall(expression.GetMethodInfo(), predicate, () => value);
 }

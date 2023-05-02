@@ -1,17 +1,17 @@
 using System.Reflection;
-using Optional;
-using Optional.Unsafe;
 
 namespace CorporateEspionage;
 
+public delegate bool InvocationPredicate(object?[] @params, int invocationIndex);
+
 public abstract class SpiedObject {
-	private readonly Dictionary<(MethodInfo Method, int InvocationIndex), Func<object?>> m_ReturnValueByIndex = new();
-	private readonly Dictionary<MethodInfo, InvocationMatcher> m_ReturnValueByMatcher = new();
+	private record CallConfiguration(InvocationPredicate Predicate, Func<object?> Factory);
+	
+	private readonly Dictionary<MethodInfo, List<CallConfiguration>> m_ReturnValueConfigurations = new();
 	private readonly Dictionary<MethodInfo, List<CallParameters>> m_Calls = new();
 
 	internal IReadOnlyDictionary<MethodInfo, IReadOnlyList<CallParameters>> GetCalls() => m_Calls.WrapReadonly();
-	internal void ConfigureCallByIndex(MethodInfo method, int index, Func<object?> factory) => m_ReturnValueByIndex[(method, index)] = factory;
-	internal void ConfigureCallByMatcher(MethodInfo method, InvocationMatcher matcher) => m_ReturnValueByMatcher[method] = matcher;
+	internal void ConfigureCall(MethodInfo method, InvocationPredicate predicate, Func<object?> factory) => m_ReturnValueConfigurations.GetOrAdd(method, _ => new List<CallConfiguration>()).Add(new CallConfiguration(predicate, factory));
 
 	private int RegisterCall(MethodInfo method, object?[] @params) {
 		// TODO generic parameters
@@ -21,23 +21,24 @@ public abstract class SpiedObject {
 		return index;
 	}
 
-	protected internal void OnCallVoid(MethodInfo method, object?[] @params) {
+	public void OnCallVoid(MethodInfo method, object?[] @params) {
 		RegisterCall(method, @params);
 	}
 
-	protected internal object? OnCallValue(MethodInfo method, object?[] @params) {
+	public object? OnCallValue(MethodInfo method, object?[] @params) {
 		int invocationIndex = RegisterCall(method, @params);
 
-		if (m_ReturnValueByIndex.TryGetValue((method, invocationIndex), out Func<object?>? valueFactory)) {
-			return valueFactory();
-		} else if (m_ReturnValueByMatcher.TryGetValue(method, out InvocationMatcher? matcher)) {
-			Option<object?> result = matcher(@params);
-			if (result.HasValue) {
-				return result.ValueOrFailure();
+		if (m_ReturnValueConfigurations.TryGetValue(method, out List<CallConfiguration>? configurations)) {
+			foreach (CallConfiguration configuration in configurations) {
+				if (configuration.Predicate(@params, invocationIndex)) {
+					return configuration.Factory();
+				}
 			}
 		}
 
-		return GetDefaultValue(method.ReturnType);
+		object onCallValue = GetDefaultValue(method.ReturnType);
+		Console.WriteLine("A " + onCallValue);
+		return onCallValue;
 	}
 
 	private object GetDefaultValue(Type t) {
