@@ -15,17 +15,21 @@ public abstract class SpiedObject {
 
 	private int RegisterCall(MethodInfo method, object?[] @params) {
 		// TODO generic parameters
-		var callsList = m_Calls.GetOrAdd(method.GetInterfaceDeclarationsForMethod().FirstOrDefault(method), _ => new List<CallParameters>());
+		var callsList = m_Calls.GetOrAdd(method, _ => new List<CallParameters>());
 		int index = callsList.Count;
-		callsList.Add(new CallParameters(method.GetInterfaceDeclarationsForMethod().FirstOrDefault(method), @params, new Type[] {}));
+		callsList.Add(new CallParameters(method, @params, new Type[] {}));
 		return index;
 	}
 
 	public void OnCallVoid(MethodInfo method, object?[] @params) {
+		method = method.GetInterfaceDeclarationsForMethod().First();
+		
 		RegisterCall(method, @params);
 	}
 
 	public object? OnCallValue(MethodInfo method, object?[] @params) {
+		method = method.GetInterfaceDeclarationsForMethod().First();
+		
 		int invocationIndex = RegisterCall(method, @params);
 
 		if (m_ReturnValueConfigurations.TryGetValue(method, out List<CallConfiguration>? configurations)) {
@@ -36,9 +40,7 @@ public abstract class SpiedObject {
 			}
 		}
 
-		object onCallValue = GetDefaultValue(method.ReturnType);
-		Console.WriteLine("A " + onCallValue);
-		return onCallValue;
+		return GetDefaultValue(method.ReturnType);
 	}
 
 	private object GetDefaultValue(Type t) {
