@@ -7,7 +7,7 @@ public class UnconfiguredSpyReturnValueTests {
 	[SetUp]
 	public void Setup() {
 		m_Generator = new SpyGenerator();
-		m_Spy = m_Generator.CreateSpy<ITestInterface2>(true);
+		m_Spy = m_Generator.CreateSpy<ITestInterface2>();
 	}
 
 	[Test]
