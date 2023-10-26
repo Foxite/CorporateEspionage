@@ -32,8 +32,13 @@ public class SpyGenerator {
 		if (printIl) {
 			Console.WriteLine(typeT.FullName);
 		}
+
+		var methodsToImplement = new List<MethodInfo>(typeT.GetMethods());
+		foreach (Type parentInterface in typeT.GetInterfaces()) {
+			methodsToImplement.AddRange(parentInterface.GetMethods());
+		}
 		
-		foreach (MethodInfo interfaceMethod in typeT.GetMethods()) {
+		foreach (MethodInfo interfaceMethod in methodsToImplement) {
 			if (printIl) {
 				Console.WriteLine(interfaceMethod.Name);
 			}

@@ -290,12 +290,3 @@ public class ConfiguredReturnValueTests {
 		});
 	}
 }
-
-public interface ITestInterface3 {
-	int TestInt();
-	int TestInt(int one);
-	int TestInt(int one, string two);
-	string TestString();
-	string TestString(int one);
-	string TestString(int one, string two);
-}

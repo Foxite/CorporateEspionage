@@ -19,11 +19,13 @@ public static class SpyExtensions {
 	}
 
 	public static MethodInfo GetMethodInfo<TDelegate>(this Expression<TDelegate> @delegate) where TDelegate : Delegate {
-		if (@delegate.Body is not MethodCallExpression mce) {
-			throw new InvalidOperationException("Expression must be a single method call");
+		if (@delegate.Body is MethodCallExpression mce) { 
+			return mce.Method;
+		} else if (@delegate.Body is MemberExpression { Member: PropertyInfo propertyInfo } me) {
+			return propertyInfo.GetMethod!;
 		}
 
-		return mce.Method;
+		throw new InvalidOperationException("Expression must be a single method call");
 	}
 
 	public static int GetCallCount<T>(this ISpy spy, Expression<Func<T>> method) => spy.GetCallCount(method.GetMethodInfo());

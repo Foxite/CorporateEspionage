@@ -60,20 +60,3 @@ public class UnconfiguredSpyReturnValueTests {
 		Assert.That(await m_Spy.Object.TestStructAsync(), Is.EqualTo(default(TestStruct)));
 	}
 }
-
-public interface ITestInterface2 {
-	void TestVoid();
-	int TestInt();
-	bool TestBool();
-	string TestString();
-	TestStruct TestStruct();
-	Task TestVoidAsync();
-	Task<int> TestIntAsync();
-	Task<bool> TestBoolAsync();
-	Task<string> TestStringAsync();
-	Task<TestStruct> TestStructAsync();
-}
-
-public struct TestStruct {
-	public int field;
-}
