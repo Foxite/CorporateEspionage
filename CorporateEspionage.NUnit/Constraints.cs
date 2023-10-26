@@ -14,9 +14,9 @@ public static class Was {
 	public static SpyTimesConstraint NotCalled(Expression<Action> expression) => NotCalled(expression.GetMethodInfo());
 	public static NoOtherCallsConstraint NoOtherCalls(Expression<Action> expression) => NoOtherCalls(expression.GetMethodInfo());
 	
-	public static SpyConstraint Called<T>(Expression<Func<T>> expression) where T : Delegate => Called(expression.GetMethodInfo());
-	public static SpyTimesConstraint NotCalled<T>(Expression<Func<T>> expression) where T : Delegate => NotCalled(expression.GetMethodInfo());
-	public static NoOtherCallsConstraint NoOtherCalls<T>(Expression<Func<T>> expression) where T : Delegate => NoOtherCalls(expression.GetMethodInfo());
+	public static SpyConstraint Called<T>(Expression<Func<T>> expression) => Called(expression.GetMethodInfo());
+	public static SpyTimesConstraint NotCalled<T>(Expression<Func<T>> expression) => NotCalled(expression.GetMethodInfo());
+	public static NoOtherCallsConstraint NoOtherCalls<T>(Expression<Func<T>> expression) => NoOtherCalls(expression.GetMethodInfo());
 	
 	public static NoOtherCallsConstraint NoOtherCalls() => new NoOtherCallsConstraint(null, null, false);
 }
