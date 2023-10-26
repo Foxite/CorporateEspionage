@@ -19,5 +19,7 @@ public class CallParameters {
 
 	public object? GetParameter(int index) => Parameters[index];
 	public object? GetParameter(string name) => Parameters[MethodInfo.GetParameters().IndexOf(pi => pi.Name == name)];
+	public T GetParameter<T>(int index) => (T) Parameters[index]!;
+	public T GetParameter<T>(string name) => (T) Parameters[MethodInfo.GetParameters().IndexOf(pi => pi.Name == name)]!;
 	public Type GetGenericParameter(int index) => GenericParameters[index];
 }
