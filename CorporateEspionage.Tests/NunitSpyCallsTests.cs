@@ -412,4 +412,26 @@ public class NUnitSpyCallsTests {
 			Assert.That(spy, Was.Called(() => spy.Object.Test4("", 0)).With(0, 0, Has.Property(nameof(string.Length)).EqualTo(3)));
 		});
 	}
+
+
+	[Test]
+	public void TestCalledWith() {
+		Spy<ITestInterface> spy = m_Generator.CreateSpy<ITestInterface>();
+		spy.Object.Test4("oya", 125125);
+
+		Assert.Multiple(() => {
+			Assert.That(spy, Was.CalledWith(() => spy.Object.Test4("oya", 125125)));
+			Assert.That(() => Assert.That(spy, Was.CalledWith(() => spy.Object.Test4("oya", 125125))), Throws.InstanceOf<AssertionException>());
+		});
+	}
+
+	[Test]
+	public void TestPropertyCalled() {
+		Spy<ITestInterface3> spy = m_Generator.CreateSpy<ITestInterface3>();
+		spy.Object.ReadwriteProperty = 5;
+
+		Assert.Multiple(() => {
+			Assert.That(spy, Was.CalledWith(() => spy.Object.ReadwriteProperty = 5));
+		});
+	}
 }

@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using System.Collections.ObjectModel;
+using System.Linq.Expressions;
 using System.Reflection;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
@@ -18,7 +19,48 @@ public static class Was {
 	public static SpyTimesConstraint NotCalled<T>(Expression<Func<T>> expression) => NotCalled(expression.GetMethodInfo());
 	public static NoOtherCallsConstraint NoOtherCalls<T>(Expression<Func<T>> expression) => NoOtherCalls(expression.GetMethodInfo());
 	
+	public static Constraint CalledWith(Expression<Action> expression) => InternalCalledWith(expression);
+	public static Constraint CalledWith<T>(Expression<Func<T>> expression) => InternalCalledWith(expression);
+	private static Constraint InternalCalledWith<T>(Expression<T> expression) where T : Delegate {
+		if (expression.Body is not MethodCallExpression rootMce) {
+			throw new NotSupportedException("Only method calls are supported by CalledWith");
+		}
+		
+		MethodInfo method = rootMce.Method;
+		ReadOnlyCollection<Expression> arguments = rootMce.Arguments;
+
+		ConstraintBuilder builder = new ConstraintBuilder();
+		builder.Append(Called(method));
+		
+		Is.EqualTo(5)
+
+		foreach (Expression argumentExpression in arguments) {
+			if (argumentExpression is MethodCallExpression argumentMce && argumentMce.Method.DeclaringType == typeof(Arg)) {
+				Constraint argumentConstraint;
+				if (argumentMce.Method.Name == "Any") {
+					argumentConstraint = new PredicateConstraint<object?>(_ => true);
+				} else if (argumentMce.Method.Name == "Constraint") {
+					// TODO
+				} else if (argumentMce.Method.Name == "Predicate") {
+					// TODO
+				} else {
+					throw new ArgumentOutOfRangeException(nameof(argumentMce.Method.Name));
+				}
+
+				builder.Append(new AndOperator());
+			}
+		}
+		
+		// TODO
+	}
+	
 	public static NoOtherCallsConstraint NoOtherCalls() => new NoOtherCallsConstraint(null, null, false);
+}
+
+public static class Arg {
+	public static T Any<T>() => default!;
+	public static T Constraint<T>(Constraint constraint) => default!;
+	public static T Predicate<T>(Predicate<T> predicate) => default!;
 }
 
 public static class CalledConstraintExtensions {

@@ -22,10 +22,14 @@ public static class SpyExtensions {
 		if (@delegate.Body is MethodCallExpression mce) { 
 			return mce.Method;
 		} else if (@delegate.Body is MemberExpression { Member: PropertyInfo propertyInfo } me) {
-			return propertyInfo.GetMethod!;
+			return me.NodeType switch {
+				ExpressionType.MemberAccess => propertyInfo.GetMethod!,
+				ExpressionType.Assign => propertyInfo.SetMethod!,
+				var type => throw new NotImplementedException($"Unknown property expression type {type}"),
+			};
 		}
 
-		throw new InvalidOperationException("Expression must be a single method call");
+		throw new InvalidOperationException("Expression must be a single method call or property access");
 	}
 
 	public static int GetCallCount<T>(this ISpy spy, Expression<Func<T>> method) => spy.GetCallCount(method.GetMethodInfo());
