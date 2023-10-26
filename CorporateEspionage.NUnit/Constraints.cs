@@ -27,9 +27,11 @@ public static class CalledConstraintExtensions {
 	
 	public static CallParameterByIndexConstraint With(this SpyConstraint ca, int invocationIndex, int parameterIndex, object? expected) => new CallParameterByIndexConstraint(ca.MethodInfo, ca, invocationIndex, parameterIndex, Is.EqualTo(expected));
 	public static CallParameterByIndexConstraint With(this SpyConstraint ca, int invocationIndex, int parameterIndex, Constraint constraint) => new CallParameterByIndexConstraint(ca.MethodInfo, ca, invocationIndex, parameterIndex, constraint);
+	public static CallParameterByIndexConstraint With(this SpyConstraint ca, int invocationIndex, int parameterIndex, Predicate<object?> predicate) => new CallParameterByIndexConstraint(ca.MethodInfo, ca, invocationIndex, parameterIndex, new PredicateConstraint<object?>(predicate));
 	
 	public static CallParameterByNameConstraint With(this SpyConstraint ca, int invocationIndex, string parameterName, object? expected) => new CallParameterByNameConstraint(ca.MethodInfo, ca, invocationIndex, parameterName, Is.EqualTo(expected));
 	public static CallParameterByNameConstraint With(this SpyConstraint ca, int invocationIndex, string parameterName, Constraint constraint) => new CallParameterByNameConstraint(ca.MethodInfo, ca, invocationIndex, parameterName, constraint);
+	public static CallParameterByNameConstraint With(this SpyConstraint ca, int invocationIndex, string parameterName, Predicate<object?> predicate) => new CallParameterByNameConstraint(ca.MethodInfo, ca, invocationIndex, parameterName, new PredicateConstraint<object?>(predicate));
 }
 
 public abstract class SpyConstraint : Constraint {

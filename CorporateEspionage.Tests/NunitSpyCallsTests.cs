@@ -342,12 +342,14 @@ public class NUnitSpyCallsTests {
 			Assert.That(spy, Was.Called(() => spy.Object.Test3(0)).With(0, 0, Is.EqualTo(512)));
 			Assert.That(spy, Was.Called(() => spy.Object.Test3(0)).With(0, "hey", 512));
 			Assert.That(spy, Was.Called(() => spy.Object.Test3(0)).With(0, "hey", Is.EqualTo(512)));
+			Assert.That(spy, Was.Called(() => spy.Object.Test3(0)).With(0, "hey", val => (int) val == 512));
 			
 			
 			Assert.That(spy, Was.Called(() => spy.Object.Test3(0)).With(1, 0, 124));
 			Assert.That(spy, Was.Called(() => spy.Object.Test3(0)).With(1, 0, Is.EqualTo(124)));
 			Assert.That(spy, Was.Called(() => spy.Object.Test3(0)).With(1, "hey", 124));
 			Assert.That(spy, Was.Called(() => spy.Object.Test3(0)).With(1, "hey", Is.EqualTo(124)));
+			Assert.That(spy, Was.Called(() => spy.Object.Test3(0)).With(1, "hey", val => (int) val == 124));
 			
 			
 			
@@ -356,11 +358,13 @@ public class NUnitSpyCallsTests {
 			Assert.That(spy, Was.Called(() => spy.Object.Test4("", 0)).With(0, 0, Is.EqualTo("oya")));
 			Assert.That(spy, Was.Called(() => spy.Object.Test4("", 0)).With(0, "yo", "oya"));
 			Assert.That(spy, Was.Called(() => spy.Object.Test4("", 0)).With(0, "yo", Is.EqualTo("oya")));
+			Assert.That(spy, Was.Called(() => spy.Object.Test4("", 0)).With(0, "yo", val => (string) val == "oya"));
 			
 			Assert.That(spy, Was.Called(() => spy.Object.Test4("", 0)).With(0, 1, 125125));
 			Assert.That(spy, Was.Called(() => spy.Object.Test4("", 0)).With(0, 1, Is.EqualTo(125125)));
 			Assert.That(spy, Was.Called(() => spy.Object.Test4("", 0)).With(0, "hey", 125125));
 			Assert.That(spy, Was.Called(() => spy.Object.Test4("", 0)).With(0, "hey", Is.EqualTo(125125)));
+			Assert.That(spy, Was.Called(() => spy.Object.Test4("", 0)).With(0, "hey", val => (long) val == 125125));
 			
 			Assert.That(spy, Was.NotCalled(() => spy.Object.Test3("")));
 			Assert.That(spy, Was.NotCalled(() => spy.Object.Test5("", 0)));
@@ -391,6 +395,8 @@ public class NUnitSpyCallsTests {
 			Assert.That(() => Assert.That(spy, Was.Called(() => spy.Object.Test3(0)).Times(2).With(0, 1, 234)), Throws.InstanceOf<AssertionException>());
 			Assert.That(() => Assert.That(spy, Was.Called(() => spy.Object.Test3(0)).Times(2).With(1, 0, 234)), Throws.InstanceOf<AssertionException>());
 			Assert.That(() => Assert.That(spy, Was.Called(() => spy.Object.Test3(0)).Times(2).With(1, 1, 234)), Throws.InstanceOf<AssertionException>());
+			
+			Assert.That(() => Assert.That(spy, Was.Called(() => spy.Object.Test3(0)).Times(2).With(1, 1, val => (int) val == 234)), Throws.InstanceOf<AssertionException>());
 		});
 	}
 	
