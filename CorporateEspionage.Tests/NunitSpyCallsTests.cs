@@ -426,12 +426,12 @@ public class NUnitSpyCallsTests {
 	}
 
 	[Test]
-	public void TestPropertyCalled() {
+	public void TestCalledWithConstraint() {
 		Spy<ITestInterface3> spy = m_Generator.CreateSpy<ITestInterface3>();
-		spy.Object.ReadwriteProperty = 5;
 
 		Assert.Multiple(() => {
-			Assert.That(spy, Was.CalledWith(() => spy.Object.ReadwriteProperty = 5));
+			Assert.That(spy, Was.CalledWith(() => spy.Object.TestInt(Arg.Constraint<int>(Is.EqualTo(5)))));
+			Assert.That(() => Assert.That(spy, Was.CalledWith(() => spy.Object.TestInt(Arg.Constraint<int>(Is.EqualTo(5))))), Throws.InstanceOf<AssertionException>());
 		});
 	}
 }

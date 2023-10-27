@@ -31,9 +31,8 @@ public static class Was {
 
 		ConstraintBuilder builder = new ConstraintBuilder();
 		builder.Append(Called(method));
-		
-		Is.EqualTo(5)
 
+		/*
 		foreach (Expression argumentExpression in arguments) {
 			if (argumentExpression is MethodCallExpression argumentMce && argumentMce.Method.DeclaringType == typeof(Arg)) {
 				Constraint argumentConstraint;
@@ -50,8 +49,11 @@ public static class Was {
 				builder.Append(new AndOperator());
 			}
 		}
+		*/
 		
 		// TODO
+
+		throw new NotImplementedException();
 	}
 	
 	public static NoOtherCallsConstraint NoOtherCalls() => new NoOtherCallsConstraint(null, null, false);
